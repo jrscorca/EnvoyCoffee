@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-protocol ImageRepositoryProtocol: Sendable{
+protocol ImageRepositoryProtocol {
     func get(from url: URL) async throws -> UIImage?
     func cancelFetch(for url: URL) async
 }

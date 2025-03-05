@@ -1,5 +1,5 @@
 //
-//  FourSquareService.swift
+//  VenueAPIService.swift
 //  EnvoyCoffee
 //
 //  Created by Joshua Scorca on 3/4/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct FourSquareService: FourSquareServiceProtocol {
+struct VenueAPIService: VenueServiceProtocol {
     private let httpClient: HTTPClient
     
     // API key is hardcoded here, but in production we should consider storing elsewhere

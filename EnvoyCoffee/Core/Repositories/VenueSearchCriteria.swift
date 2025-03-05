@@ -8,14 +8,21 @@
 import Foundation
 import Observation
 
-@Observable
-final class VenueSearchCriteria {
+struct VenueSearchCriteria: Sendable {
+    
+    enum SortBy: String {
+        case distance
+        case popularity
+        case rating
+        case relevance
+    }
+    
     var latitude: Double = 37.7777
     var longitude: Double = -122.3952
     var query: String = "coffee"
     var radius: String = "1600" // 1600 meter, ~1 mile
     var limit: String = "10"
-    var sortBy: String? = "DISTANCE"
+    var sortBy: SortBy = .distance
     
     func queryItems() -> [URLQueryItem] {
         let queryItems: [URLQueryItem] = [
@@ -23,11 +30,9 @@ final class VenueSearchCriteria {
             URLQueryItem(name: "query", value: query),
             URLQueryItem(name: "radius", value: radius),
             URLQueryItem(name: "limit", value: limit),
-            URLQueryItem(name: "sort", value: sortBy)
+            URLQueryItem(name: "sort", value: sortBy.rawValue)
         ]
         
         return queryItems
     }
-    
-    
 }

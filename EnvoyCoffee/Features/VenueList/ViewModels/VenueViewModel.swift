@@ -11,15 +11,15 @@ import Observation
 @Observable
 @MainActor
 class VenueViewModel {
-    private let fourSquareService: FourSquareServiceProtocol
+    private let venueRepository: VenueRepositoryProtocol
     private(set) var venues: [Venue] = []
     
     var searchCriteria = VenueSearchCriteria()
     var isLoading: Bool = false
     var error: Error?
     
-    init(fourSquareService: FourSquareServiceProtocol = FourSquareService()) {
-        self.fourSquareService = fourSquareService
+    init(venueRepository: VenueRepositoryProtocol = VenueRepository()) {
+        self.venueRepository = venueRepository
     }
     
     func fetchVenues() async {
@@ -27,7 +27,7 @@ class VenueViewModel {
         error = nil
         
         do {
-            let venues = try await fourSquareService.searchVenues(searchCriteria: searchCriteria)
+            let venues = try await venueRepository.getVenues(limit: 10)
             self.venues = venues
         } catch {
             self.error = error
