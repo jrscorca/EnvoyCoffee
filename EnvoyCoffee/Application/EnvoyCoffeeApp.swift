@@ -11,7 +11,7 @@ import SwiftUI
 struct EnvoyCoffeeApp: App {
     var body: some Scene {
         WindowGroup {
-            VenueView()
+            VenueView(viewModel: VenueViewModel())
         }
     }
 }

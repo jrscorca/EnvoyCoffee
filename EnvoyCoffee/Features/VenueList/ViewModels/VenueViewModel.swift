@@ -13,8 +13,7 @@ import Observation
 class VenueViewModel {
     private let venueRepository: VenueRepositoryProtocol
     private(set) var venues: [Venue] = []
-    
-    var searchCriteria = VenueSearchCriteria()
+
     var isLoading: Bool = false
     var error: Error?
     
@@ -22,12 +21,12 @@ class VenueViewModel {
         self.venueRepository = venueRepository
     }
     
-    func fetchVenues() async {
+    func fetchVenues(limit: Int) async {
         isLoading = true
         error = nil
         
         do {
-            let venues = try await venueRepository.getVenues(limit: 10)
+            let venues = try await venueRepository.getVenues(limit: limit)
             self.venues = venues
         } catch {
             self.error = error

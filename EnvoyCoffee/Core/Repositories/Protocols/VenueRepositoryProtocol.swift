@@ -9,7 +9,7 @@ import Foundation
 
 protocol VenueRepositoryProtocol: Sendable {
     func updateQuery(_ query: String) async
-    func updateLocation(latitude: Double, longitude: Double) async
+    func updateAddress(_ address: String) async throws
     func updateRadius(_ radius: String) async
     func getVenues(limit: Int) async throws -> [Venue]
 }
