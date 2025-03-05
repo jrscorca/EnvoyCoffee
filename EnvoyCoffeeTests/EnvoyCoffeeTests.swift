@@ -6,9 +6,10 @@
 //
 
 import XCTest
+@testable import EnvoyCoffee
 
 final class EnvoyCoffeeTests: XCTestCase {
-
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -17,19 +18,50 @@ final class EnvoyCoffeeTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    func testFetchVenues_success() async throws {
+        // Given
+        var mockHTTPClient = MockHTTPClient()
+        mockHTTPClient.mockData = MockJSONResponse.venueSearchSuccess.data(using: .utf8)
+        let mockHttpResponse = HTTPURLResponse(
+            url: URL(string: "https://test.com")!,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: nil
+        )
+        mockHTTPClient.mockResponse = mockHttpResponse
+        
+        let sut = FourSquareService(httpClient: mockHTTPClient)
+
+        let mockVenueSearchCriteria = VenueSearchCriteria()
+        
+        // When
+        let venues = try await sut.searchVenues(searchCriteria: mockVenueSearchCriteria)
+        
+        // Then
+        XCTAssert(venues.count == 2)
+    }
+    
+    func testFetchImageData_Success() async throws {
+        // Given
+        var mockHTTPClient = MockHTTPClient()
+        let testURL = URL(string: "https://mock.com")!
+        let expectedData = "test image data".data(using: .utf8)!
+        let mockResponse = HTTPURLResponse(
+            url: testURL,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: nil
+        )
+        mockHTTPClient.mockData = expectedData
+        mockHTTPClient.mockResponse = mockResponse
+        let sut = ImageService(client: mockHTTPClient)
+        
+        // When
+        let receivedData = try await sut.fetchImageData(url: testURL)
+        
+        // Then
+        XCTAssertEqual(receivedData, expectedData)
     }
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
 
 }

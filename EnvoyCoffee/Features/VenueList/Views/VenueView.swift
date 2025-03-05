@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  VenueView.swift
 //  EnvoyCoffee
 //
 //  Created by Joshua Scorca on 3/4/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct VenueView: View {
     var body: some View {
         VStack {
             Image(systemName: "globe")
@@ -20,5 +20,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    VenueView()
 }
