@@ -11,5 +11,7 @@ protocol VenueRepositoryProtocol: Sendable {
     func updateQuery(_ query: String) async
     func updateAddress(_ address: String) async throws
     func updateRadius(_ radius: String) async
-    func getVenues(limit: Int) async throws -> [Venue]
+    func getVenues(limit: Int, loadMore: Bool) async throws -> (venues: [Venue], hasMore: Bool)
+    func resetPagination() async
+    
 }

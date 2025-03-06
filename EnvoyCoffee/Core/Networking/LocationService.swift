@@ -24,7 +24,6 @@ struct LocationService: LocationServiceProtocol {
     }
     
     func openMapsWithAddress(_ address: String) async throws {
-        // URL encode the address for proper URL formatting
         guard let encodedAddress = address.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let url = URL(string: "maps://?address=\(encodedAddress)&navigate=yes") else {
             throw LocationServiceError.invalidMapURL

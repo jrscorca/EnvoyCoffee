@@ -48,8 +48,8 @@ struct VenueCardView: View {
                     Image(systemName: "location.circle.fill")
                         .foregroundStyle(.tint)
                     
-                    if let distance = venue.distance {
-                        Text(formatDistance(distance))
+                    if let distance = venue.distanceInMiles {
+                        Text("\(distance)")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                     } else {
@@ -75,15 +75,6 @@ struct VenueCardView: View {
         }
         .padding(.vertical, 8)
         .contentShape(Rectangle())
-    }
-    
-    private func formatDistance(_ meters: Int) -> String {
-        if meters < 1000 {
-            return "\(meters) m"
-        } else {
-            let kilometers = Double(meters) / 1000.0
-            return String(format: "%.1f km", kilometers)
-        }
     }
 }
 

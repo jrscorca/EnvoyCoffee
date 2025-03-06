@@ -31,16 +31,33 @@ final class VenueRepository : VenueRepositoryProtocol {
         await venueSearchCriteriaActor.updateLocation(latitude: location.latitude, longitude: location.longitude)
     }
     
-    func getVenues(limit: Int = 10) async throws -> [Venue] {
+    func getVenues(limit: Int = 10, loadMore: Bool = false) async throws -> (venues: [Venue], hasMore: Bool) {
+        // If not loading more, reset the cursor
+        // Important for new searches
+        if !loadMore {
+            await venueSearchCriteriaActor.resetCursor()
+        }
+        
         await venueSearchCriteriaActor.updateLimit(String(limit))
         let searchCriteria = await venueSearchCriteriaActor.criteria
-        var venues = try await venueService.searchVenues(searchCriteria: searchCriteria)
+        
+        let (venues, nextCursor) = try await venueService.searchVenues(searchCriteria: searchCriteria)
+        
+        // Update cursor for next page if available
+        if let nextCursor = nextCursor {
+            await venueSearchCriteriaActor.updateCursor(nextCursor)
+        }
         
         // setup relationship for venues and photos
-        await fetchPhotosForVenues(venues: &venues)
+        var venuesWithPhotos = venues
+        await fetchPhotosForVenues(venues: &venuesWithPhotos)
         
-        return venues
+        return (venuesWithPhotos, nextCursor != nil)
         
+    }
+    
+    func resetPagination() async {
+        await venueSearchCriteriaActor.resetCursor()
     }
     
     private func fetchPhotosForVenues(venues: inout [Venue]) async {

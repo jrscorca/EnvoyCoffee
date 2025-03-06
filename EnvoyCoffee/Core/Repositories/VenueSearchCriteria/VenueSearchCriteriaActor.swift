@@ -26,4 +26,12 @@ actor VenueSearchCriteriaActor {
         criteria.latitude = latitude
         criteria.longitude = longitude
     }
+    
+    func updateCursor(_ cursor: String?) {
+        criteria.cursor = cursor
+    }
+    
+    func resetCursor() {
+        criteria.cursor = nil
+    }
 }

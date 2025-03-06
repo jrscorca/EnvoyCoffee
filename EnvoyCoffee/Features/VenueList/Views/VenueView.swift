@@ -24,7 +24,7 @@ struct VenueView: View {
             .environment(viewModel)
             .onAppear {
                 Task {
-                    await viewModel.fetchVenues(limit: 10)
+                    await viewModel.refresh()
                 }
             }
             .navigationTitle("Coffee Shops")
@@ -52,7 +52,7 @@ struct EmptyVenueView: View {
             )
             Button("Retry") {
                 Task {
-                    await viewModel.fetchVenues(limit: 10)
+                    await viewModel.refresh()
                 }
             }
             .offset(y: -50)
@@ -72,19 +72,42 @@ struct VenueLoadingView: View {
 struct VenueListView: View {
     @Environment(VenueViewModel.self) private var viewModel
     var body: some View {
-        List {
-            ForEach(viewModel.venues) { venue in
-                Button {
-                    viewModel.openMap(for: venue)
-                } label: {
+            List {
+                ForEach(viewModel.venues) { venue in
                     VenueCardView(venue: venue)
+                        .onAppear {
+                            checkIfLastItem(venue)
+                        }
+                }
+                
+                if viewModel.isLoadingMore {
+                    loadingMoreIndicator
+                }
+            }
+            .environment(viewModel)
+            .refreshable {
+                Task {
+                    await viewModel.refresh()
                 }
             }
         }
-        .environment(viewModel)
-        .refreshable {
+    
+    private var loadingMoreIndicator: some View {
+        HStack {
+            Spacer()
+            ProgressView()
+                .frame(height: 50)
+            Spacer()
+        }
+    }
+    
+    private func checkIfLastItem(_ venue: Venue) {
+        // If this is one of the last two items, start loading more
+        let thresholdIndex = max(0, viewModel.venues.count - 2)
+        if let currentIndex = viewModel.venues.firstIndex(where: { $0.id == venue.id }),
+           currentIndex >= thresholdIndex && viewModel.hasMoreResults && !viewModel.isLoadingMore {
             Task {
-                await viewModel.fetchVenues(limit: 10)
+                await viewModel.loadMoreVenues()
             }
         }
     }

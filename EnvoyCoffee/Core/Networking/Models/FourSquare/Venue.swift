@@ -22,6 +22,11 @@ struct Venue: Decodable, Identifiable {
     let distance: Int?
     let location: Location
     var photo: Photo? // This will be populated after fetching photos
+    var distanceInMiles: String? {
+        guard let distance = distance else { return nil }
+        let miles = Double(distance) / 1609.34
+        return String(format:"%.1f mi", miles)
+    }
     
     enum CodingKeys: String, CodingKey {
         case id = "fsq_id"
