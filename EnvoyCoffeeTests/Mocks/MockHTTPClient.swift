@@ -9,11 +9,12 @@ import Foundation
 @testable import EnvoyCoffee
 
 struct MockHTTPClient: HTTPClient {
+
     var mockData: Data?
     var mockResponse: HTTPURLResponse?
     var mockError: Error?
     
-    func execute(request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+func execute(request: inout URLRequest) async throws -> (Data, HTTPURLResponse) {
         
         guard let data = mockData,
         let response = mockResponse else {

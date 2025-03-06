@@ -30,12 +30,12 @@ final class EnvoyCoffeeTests: XCTestCase {
         )
         mockHTTPClient.mockResponse = mockHttpResponse
         
-        let sut = FourSquareService(httpClient: mockHTTPClient)
+        let sut = VenueAPIService(httpClient: mockHTTPClient)
 
         let mockVenueSearchCriteria = VenueSearchCriteria()
         
         // When
-        let venues = try await sut.searchVenues(searchCriteria: mockVenueSearchCriteria)
+        let (venues, _) = try await sut.searchVenues(searchCriteria: mockVenueSearchCriteria)
         
         // Then
         XCTAssert(venues.count == 2)
@@ -62,6 +62,20 @@ final class EnvoyCoffeeTests: XCTestCase {
         // Then
         XCTAssertEqual(receivedData, expectedData)
     }
+    
+    func testVenueViewModelFetchVenues_Success() async throws {
+        // Given
+        let sut = await VenueViewModel(venueRepository: MockVenueRepository())
+        
+        // When
+        await sut.fetchVenues()
+        let venues = await sut.venues
+        
+        // Then
+        XCTAssert(venues.count > 0)
+        
+    }
+        
 
 
 }
