@@ -9,7 +9,7 @@ The app displays coffee shops near Envoy's SF office and features an infinite sc
 - **Image Caching**: Smart image loading with disk caching to reduce network requests as well as task deduplication.
 - **Location Integration**: Maps integration for directions to coffee shops
 - **Modern UI**: Clean, card-based design using SwiftUI
-
+- Note: I could not find 'price' in Foursquare API response.  Also, cursor pagination ends after about 10 pages.
 ## Architecture
 
 The application follows the MVVM (Model-View-ViewModel) architecture pattern with a clean separation of concerns and a layered approach:
