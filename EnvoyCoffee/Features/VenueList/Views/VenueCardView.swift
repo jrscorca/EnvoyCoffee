@@ -17,9 +17,15 @@ struct VenueCardView: View {
                     .frame(width: 128, height: 128)
                     .clipShape(.rect(cornerRadius: 25))
             } else {
-                Color.gray
-                    .frame(width: 128, height: 128)
-                    .clipShape(.rect(cornerRadius: 25))
+                ZStack{
+                    Color.gray
+                        .aspectRatio(contentMode: .fit)
+                    Image(systemName: "building.2")
+                        .foregroundColor(.white)
+                        .font(.system(size: 40))
+                }
+                .frame(width: 128, height: 128)
+                .clipShape(.rect(cornerRadius: 25))
             }
             Text(venue.name)
                 .font(.headline)

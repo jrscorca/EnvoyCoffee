@@ -44,14 +44,31 @@ final class VenueRepository : VenueRepositoryProtocol {
     }
     
     private func fetchPhotosForVenues(venues: inout [Venue]) async {
-        for i in 0..<venues.count {
-            do {
-                let photos = try await venueService.fetchVenuePhotos(venueId: venues[i].id, limit: 1)
-                if let photo = photos.first {
-                    venues[i].photo = photo
+        // Using task group to handle concurrent photo fetching
+        await withTaskGroup(of: (index: Int, photo: Photo?).self) { [weak self] group in
+            guard let strongSelf = self else {
+                return
+            }
+            // Add a task for each venue
+            for i in 0..<venues.count {
+                let venueId = venues[i].id
+                
+                group.addTask {
+                    do {
+                        let photos = try await strongSelf.venueService.fetchVenuePhotos(venueId: venueId, limit: 1)
+                        return (index: i, photo: photos.first)
+                    } catch {
+                        print("Failed to fetch photo for venue \(venueId): \(error.localizedDescription)")
+                        return (index: i, photo: nil)
+                    }
                 }
-            } catch {
-                print("Failed to fetch photo for venue \(venues[i].id): \(error.localizedDescription)")
+            }
+            
+            // Process the results as they complete
+            for await result in group {
+                if let photo = result.photo {
+                    venues[result.index].photo = photo
+                }
             }
         }
     }

@@ -9,10 +9,6 @@ import Foundation
 
 struct PhotoResponse: Decodable {
     let photos: [Photo]
-    
-    enum CodingKeys: String, CodingKey {
-        case photos = "results"
-    }
 }
 
 struct Photo: Decodable, Identifiable {
@@ -27,7 +23,6 @@ struct Photo: Decodable, Identifiable {
     }
     
     var thumbnailURL: URL? {
-        // For thumbnails, we use a smaller size (100x100)
-        URL(string: "\(prefix)100x100\(suffix)")
+        URL(string: "\(prefix)200x200\(suffix)")
     }
 }

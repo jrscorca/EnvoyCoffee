@@ -19,7 +19,7 @@ enum FourSquareEndpoint {
         case .searchPlaces:
             urlString = "\(baseURL)places/search"
         case .venuePhotos(let venueID):
-            urlString = "\(baseURL)venues/\(venueID)/photos"
+            urlString = "\(baseURL)places/\(venueID)/photos"
         }
         
         // This will catch malformed URLs
