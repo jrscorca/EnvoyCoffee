@@ -10,9 +10,6 @@ import Foundation
 struct VenueAPIService: VenueServiceProtocol {
     private let httpClient: HTTPClient
     
-    // API key is hardcoded here, but in production we should consider storing elsewhere
-    private let apiKey = "fsq37fyXWzLyavOuzwKG/gxF0/ALauoEc4ravo1nXnA9aVo="
-    
     init(httpClient: HTTPClient = URLSessionHTTPClient()) {
         self.httpClient = httpClient
     }
@@ -30,10 +27,9 @@ struct VenueAPIService: VenueServiceProtocol {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.addValue(apiKey, forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
-        let (data, response) = try await httpClient.execute(request: request)
+        let (data, response) = try await httpClient.execute(request: &request)
         
         if response.statusCode != 200 {
             throw URLError(.badServerResponse)
@@ -44,4 +40,31 @@ struct VenueAPIService: VenueServiceProtocol {
         return venueResponse.results
     }
 
+    func fetchVenuePhotos(venueId: String, limit: Int = 1) async throws -> [Photo] {
+        let endpoint = FourSquareEndpoint.venuePhotos(venueID: venueId)
+         guard var components = URLComponents(url: endpoint.url, resolvingAgainstBaseURL: false) else {
+             throw URLError(.badURL)
+         }
+         
+         components.queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
+         
+         guard let url = components.url else {
+             throw URLError(.badURL)
+         }
+         
+         var request = URLRequest(url: url)
+         request.httpMethod = "GET"
+         request.addValue("application/json", forHTTPHeaderField: "Accept")
+         
+         let (data, response) = try await httpClient.execute(request: &request)
+         
+         if response.statusCode != 200 {
+             throw URLError(.badServerResponse)
+         }
+         
+         let decoder = JSONDecoder()
+         let photoResponse = try decoder.decode(PhotoResponse.self, from: data)
+         return photoResponse.photos
+     }
+    
 }

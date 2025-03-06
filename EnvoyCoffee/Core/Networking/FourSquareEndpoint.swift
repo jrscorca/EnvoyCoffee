@@ -9,6 +9,7 @@ import Foundation
 
 enum FourSquareEndpoint {
     case searchPlaces
+    case venuePhotos(venueID: String)
     
     var url: URL {
         let baseURL = "https://api.foursquare.com/v3/"
@@ -17,6 +18,8 @@ enum FourSquareEndpoint {
         switch self {
         case .searchPlaces:
             urlString = "\(baseURL)places/search"
+        case .venuePhotos(let venueID):
+            urlString = "\(baseURL)venues/\(venueID)/photos"
         }
         
         // This will catch malformed URLs

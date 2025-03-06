@@ -8,7 +8,7 @@
 import Foundation
 
 final class VenueRepository : VenueRepositoryProtocol {
-    
+
     private let venueSearchCriteriaActor = VenueSearchCriteriaActor()
     private let venueService: VenueServiceProtocol
     private let locationService: LocationServiceProtocol
@@ -34,7 +34,26 @@ final class VenueRepository : VenueRepositoryProtocol {
     func getVenues(limit: Int = 10) async throws -> [Venue] {
         await venueSearchCriteriaActor.updateLimit(String(limit))
         let searchCriteria = await venueSearchCriteriaActor.criteria
-        return try await venueService.searchVenues(searchCriteria: searchCriteria)
+        var venues = try await venueService.searchVenues(searchCriteria: searchCriteria)
+        
+        // setup relationship for venues and photos
+        await fetchPhotosForVenues(venues: &venues)
+        
+        return venues
+        
+    }
+    
+    private func fetchPhotosForVenues(venues: inout [Venue]) async {
+        for i in 0..<venues.count {
+            do {
+                let photos = try await venueService.fetchVenuePhotos(venueId: venues[i].id, limit: 1)
+                if let photo = photos.first {
+                    venues[i].photo = photo
+                }
+            } catch {
+                print("Failed to fetch photo for venue \(venues[i].id): \(error.localizedDescription)")
+            }
+        }
     }
     
     private func updateLocation(latitude: Double, longitude: Double) async {

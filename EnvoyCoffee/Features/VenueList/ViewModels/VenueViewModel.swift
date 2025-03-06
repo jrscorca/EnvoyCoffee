@@ -33,4 +33,18 @@ class VenueViewModel {
         }
     }
     
+    private func fetchPhotosForVenues(venues: inout [Venue]) async {
+            for i in 0..<venues.count {
+                do {
+                    let photos = try await venueService.fetchVenuePhotos(venueId: venues[i].id, limit: 1)
+                    if let photo = photos.first {
+                        venues[i].photo = photo
+                    }
+                } catch {
+                    // Just log the error but continue, we don't want to fail the entire operation
+                    print("Failed to fetch photo for venue \(venues[i].id): \(error.localizedDescription)")
+                }
+            }
+        }
+    
 }

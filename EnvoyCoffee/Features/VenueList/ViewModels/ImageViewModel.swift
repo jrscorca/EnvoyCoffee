@@ -24,6 +24,7 @@ public final class ImageViewModel {
         error = nil
         do {
             image = try await imageRepository.get(from: url)
+            let asdf = 0
         } catch {
             self.error = error
         }

@@ -23,7 +23,10 @@ actor ImageService: ImageServiceProtocol {
         }
         
         let task = Task<Data, Error> {
-            let (data, response) = try await client.execute(request: URLRequest(url: url))
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            
+            let (data, response) = try await client.execute(request: &request)
             try Task.checkCancellation()
             guard (200...299).contains(response.statusCode) else {
                 throw URLError(.badServerResponse)

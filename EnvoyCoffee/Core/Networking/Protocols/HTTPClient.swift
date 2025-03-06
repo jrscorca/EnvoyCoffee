@@ -8,5 +8,5 @@
 import Foundation
 
 protocol HTTPClient: Sendable {
-    func execute(request: URLRequest) async throws -> (Data, HTTPURLResponse)
+    func execute(request: inout URLRequest) async throws -> (Data, HTTPURLResponse)
 }

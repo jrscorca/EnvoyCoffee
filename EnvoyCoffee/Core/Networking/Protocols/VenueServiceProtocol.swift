@@ -9,4 +9,5 @@ import Foundation
 
 protocol VenueServiceProtocol: Sendable {
     func searchVenues(searchCriteria: VenueSearchCriteria) async throws -> [Venue]
+    func fetchVenuePhotos(venueId: String, limit: Int) async throws -> [Photo]
 }

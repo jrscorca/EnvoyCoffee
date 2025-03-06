@@ -74,9 +74,10 @@ struct VenueListView: View {
     var body: some View {
         List {
             ForEach(viewModel.venues) { venue in
-                Text(venue.name)
+                VenueCardView(venue: venue)
             }
         }
+        .environment(viewModel)
         .refreshable {
             Task {
                 await viewModel.fetchVenues(limit: 10)

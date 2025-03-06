@@ -8,6 +8,9 @@
 import Foundation
 import CoreLocation
 
+import Foundation
+import CoreLocation
+
 struct VenueResponse: Decodable {
     let results: [Venue]
 }
@@ -18,6 +21,7 @@ struct Venue: Decodable, Identifiable {
     let categories: [Category]?
     let distance: Int?
     let location: Location
+    var photo: Photo? // This will be populated after fetching photos
     
     enum CodingKeys: String, CodingKey {
         case id = "fsq_id"

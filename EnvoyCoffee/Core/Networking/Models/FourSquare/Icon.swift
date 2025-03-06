@@ -12,6 +12,6 @@ struct Icon: Decodable {
     let suffix: String
     
     var url: String {
-        return "\(prefix)88\(suffix)"
+        return "\(prefix)128\(suffix)"
     }
 }
