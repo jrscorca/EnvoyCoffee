@@ -74,10 +74,15 @@ struct VenueListView: View {
     var body: some View {
             List {
                 ForEach(viewModel.venues) { venue in
-                    VenueCardView(venue: venue)
-                        .onAppear {
-                            checkIfLastItem(venue)
-                        }
+                    Button {
+                        viewModel.openMap(for: venue)
+                    } label: {
+                        VenueCardView(venue: venue)
+                            .onAppear {
+                                checkIfLastItem(venue)
+                            }
+                    }
+                    
                 }
                 
                 if viewModel.isLoadingMore {

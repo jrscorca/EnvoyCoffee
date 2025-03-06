@@ -32,7 +32,7 @@ struct VenueCardView: View {
             // Details section
             VStack(alignment: .leading, spacing: 4) {
                 Text(venue.name)
-                    .tint(.black)
+                    .tint(.primary)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .lineLimit(1)
