@@ -12,13 +12,15 @@ import Observation
 @MainActor
 class VenueViewModel {
     private let venueRepository: VenueRepositoryProtocol
+    private let locationService: LocationServiceProtocol
     private(set) var venues: [Venue] = []
 
     var isLoading: Bool = false
     var error: Error?
     
-    init(venueRepository: VenueRepositoryProtocol = VenueRepository()) {
+    init(venueRepository: VenueRepositoryProtocol = VenueRepository(), locationService: LocationServiceProtocol = LocationService()) {
         self.venueRepository = venueRepository
+        self.locationService = locationService
     }
     
     func fetchVenues(limit: Int) async {
@@ -30,6 +32,16 @@ class VenueViewModel {
             self.venues = venues
         } catch {
             self.error = error
+        }
+    }
+    
+    func openMap(for venue: Venue) {
+        Task {
+            do {
+                try await locationService.openMapsWithAddress(venue.location.formattedAddress ?? "")
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
     

@@ -21,7 +21,7 @@ struct AsyncImageView: View {
                 ZStack{
                     Color.gray
                         .aspectRatio(contentMode: .fit)
-                    Image(systemName: "building.2")
+                    Image(systemName: "cup.and.saucer.fill")
                         .foregroundColor(.white)
                         .font(.system(size: 40))
                 }

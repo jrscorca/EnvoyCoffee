@@ -74,7 +74,11 @@ struct VenueListView: View {
     var body: some View {
         List {
             ForEach(viewModel.venues) { venue in
-                VenueCardView(venue: venue)
+                Button {
+                    viewModel.openMap(for: venue)
+                } label: {
+                    VenueCardView(venue: venue)
+                }
             }
         }
         .environment(viewModel)
