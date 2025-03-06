@@ -22,7 +22,6 @@ enum FourSquareEndpoint {
             urlString = "\(baseURL)places/\(venueID)/photos"
         }
         
-        // This will catch malformed URLs
         guard let url = URL(string: urlString) else {
             fatalError("Invalid URL format: \(urlString)")
         }
