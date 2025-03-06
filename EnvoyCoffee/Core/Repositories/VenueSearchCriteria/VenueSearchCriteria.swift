@@ -20,7 +20,9 @@ struct VenueSearchCriteria: Sendable {
     var latitude: Double = 37.7777
     var longitude: Double = -122.3952
     var query: String = "coffee"
-    var radius: String = "16000" // 1600 meter = ~1 mile. let's make it 10 miles
+    
+    // for radius max allowed is 100,000 meters. let's make it 62 miles (1600 meter = ~1 mile)
+    var radius: String = "100000"
     var limit: String = "10"
     var sortBy: SortBy = .distance
     var cursor: String? = nil
