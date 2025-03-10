@@ -11,7 +11,7 @@ struct PhotoResponse: Decodable {
     let photos: [Photo]
 }
 
-struct Photo: Decodable, Identifiable {
+struct Photo: Codable, Identifiable {
     let id: String
     let prefix: String
     let suffix: String

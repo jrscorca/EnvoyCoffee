@@ -15,7 +15,7 @@ struct VenueResponse: Decodable {
     let results: [Venue]
 }
 
-struct Venue: Decodable, Identifiable {
+struct Venue: Codable, Identifiable {
     let id: String
     let name: String
     let categories: [Category]?
@@ -30,6 +30,6 @@ struct Venue: Decodable, Identifiable {
     
     enum CodingKeys: String, CodingKey {
         case id = "fsq_id"
-        case name, categories, distance, location
+        case name, categories, distance, location, photo
     }
 }

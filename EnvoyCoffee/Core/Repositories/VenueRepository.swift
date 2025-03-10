@@ -8,14 +8,19 @@
 import Foundation
 
 final class VenueRepository : VenueRepositoryProtocol {
-
+    
     private let venueSearchCriteriaActor = VenueSearchCriteriaActor()
     private let venueService: VenueServiceProtocol
     private let locationService: LocationServiceProtocol
+    private let venueDataSource: VenueDataSourceProtocol
     
-    init(venueService: VenueServiceProtocol = VenueAPIService(), locationService: LocationServiceProtocol = LocationService()) {
+    init(venueService: VenueServiceProtocol = VenueAPIService(),
+         locationService: LocationServiceProtocol = LocationService(),
+         venueDataSource: VenueDataSourceProtocol = UserDefaultsVenueDataSource()
+    ) {
         self.venueService = venueService
         self.locationService = locationService
+        self.venueDataSource = venueDataSource
     }
     
     func updateRadius(_ radius: String) async {
@@ -34,25 +39,38 @@ final class VenueRepository : VenueRepositoryProtocol {
     func getVenues(limit: Int = 10, loadMore: Bool = false) async throws -> (venues: [Venue], hasMore: Bool) {
         // If not loading more, reset the cursor
         // Important for new searches
+        var clearCache: Bool = false
         if !loadMore {
             await venueSearchCriteriaActor.resetCursor()
+            clearCache = true
         }
         
         await venueSearchCriteriaActor.updateLimit(String(limit))
         let searchCriteria = await venueSearchCriteriaActor.criteria
-        
-        let (venues, nextCursor) = try await venueService.searchVenues(searchCriteria: searchCriteria)
-        
-        // Update cursor for next page if available
-        if let nextCursor = nextCursor {
-            await venueSearchCriteriaActor.updateCursor(nextCursor)
+        do {
+            let (venues, nextCursor) = try await venueService.searchVenues(searchCriteria: searchCriteria)
+            
+            // Update cursor for next page if available
+            if let nextCursor = nextCursor {
+                await venueSearchCriteriaActor.updateCursor(nextCursor)
+            }
+            
+            // setup relationship for venues and photos
+            var venuesWithPhotos = venues
+            await fetchPhotosForVenues(venues: &venuesWithPhotos)
+            
+            //save the venues locally
+            if clearCache {
+                await venueDataSource.clear()
+            }
+            try await venueDataSource.add(venues: venuesWithPhotos)
+            
+            return (venuesWithPhotos, nextCursor != nil)
+        } catch {
+            print(error.localizedDescription)
+            let dataSourceVenues = try await venueDataSource.load()
+            return (dataSourceVenues, false)
         }
-        
-        // setup relationship for venues and photos
-        var venuesWithPhotos = venues
-        await fetchPhotosForVenues(venues: &venuesWithPhotos)
-        
-        return (venuesWithPhotos, nextCursor != nil)
         
     }
     

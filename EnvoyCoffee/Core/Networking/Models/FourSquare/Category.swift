@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Category: Decodable {
+struct Category: Codable {
     let id: Int
     let name: String
     let icon: Icon?

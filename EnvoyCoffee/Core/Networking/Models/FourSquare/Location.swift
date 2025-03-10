@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Location: Decodable {
+struct Location: Codable {
     let address: String?
     let formattedAddress: String?
     let locality: String?
