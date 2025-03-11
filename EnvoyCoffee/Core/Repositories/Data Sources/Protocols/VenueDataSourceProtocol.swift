@@ -8,7 +8,7 @@
 import Foundation
 
 protocol VenueDataSourceProtocol: Sendable {
-    func load() async throws -> [Venue]
+    func load(_ limit: Int?) async throws -> ([Venue], Bool)
     func add(venues: [Venue]) async throws
     func clear() async
 }

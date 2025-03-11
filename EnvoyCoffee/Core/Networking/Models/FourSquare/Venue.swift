@@ -32,4 +32,5 @@ struct Venue: Codable, Identifiable {
         case id = "fsq_id"
         case name, categories, distance, location, photo
     }
+
 }

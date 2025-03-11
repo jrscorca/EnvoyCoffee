@@ -15,8 +15,8 @@ struct Photo: Codable, Identifiable {
     let id: String
     let prefix: String
     let suffix: String
-    let width: Int
-    let height: Int
+    let width: Int?
+    let height: Int?
     
     var originalImageURL: URL? {
         URL(string: "\(prefix)original\(suffix)")

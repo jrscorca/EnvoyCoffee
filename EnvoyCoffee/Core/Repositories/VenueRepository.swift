@@ -68,8 +68,7 @@ final class VenueRepository : VenueRepositoryProtocol {
             return (venuesWithPhotos, nextCursor != nil)
         } catch {
             print(error.localizedDescription)
-            let dataSourceVenues = try await venueDataSource.load()
-            return (dataSourceVenues, false)
+            return try await venueDataSource.load(limit)
         }
         
     }
