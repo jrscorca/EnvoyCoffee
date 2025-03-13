@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct VenueCardView: View {
-    @Environment(VenueViewModel.self) var viewModel
+    
     let venue: Venue
     
     var body: some View {

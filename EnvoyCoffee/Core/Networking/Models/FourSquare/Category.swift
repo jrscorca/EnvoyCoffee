@@ -7,8 +7,12 @@
 
 import Foundation
 
-struct Category: Decodable {
+struct Category: Decodable, Hashable {
     let id: Int
     let name: String
     let icon: Icon?
+    
+    static func == (lhs: Category, rhs: Category) -> Bool {
+        return lhs.id == rhs.id
+    }
 }

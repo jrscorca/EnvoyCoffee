@@ -14,17 +14,76 @@ class VenueViewModel {
     private let venueRepository: VenueRepositoryProtocol
     private let locationService: LocationServiceProtocol
     private(set) var venues: [Venue] = []
+    private(set) var filteredVenues: [Venue] = []
+    private let itemsPerPage: Int = 10
 
     
     var isLoading: Bool = false // loading initial venues
     var isLoadingMore: Bool = false // for infinite scrolling
     var error: Error?
     var hasMoreResults: Bool = true
-    private let itemsPerPage: Int = 10
+    var selectedCategory: Category? = nil {
+        didSet {
+            filterVenues(searchText)
+        }
+    }
+    
+    var categories: [Category] = []
+    var searchText: String = "" {
+        didSet {
+            filterVenues(searchText)
+        }
+    }
     
     init(venueRepository: VenueRepositoryProtocol = VenueRepository(), locationService: LocationServiceProtocol = LocationService()) {
         self.venueRepository = venueRepository
         self.locationService = locationService
+    }
+    
+    private func filterVenues(_ searchText: String) {
+        if searchText.isEmpty {
+            filteredVenues = venues.filter {
+                let matchesCategory: Bool
+                if let selectedCategory {
+                    if let venueCategories = $0.categories{
+                        matchesCategory = (venueCategories.contains(selectedCategory))
+                    } else {
+                        matchesCategory = false
+                    }
+                } else {
+                    matchesCategory = true
+                }
+                return matchesCategory
+            }
+        } else {
+            filteredVenues = venues.filter {
+                let matchesText = $0.name.lowercased().contains(searchText.lowercased())
+                let matchesCategory: Bool
+                if let selectedCategory {
+                    if let venueCategories = $0.categories{
+                        matchesCategory = (venueCategories.contains(selectedCategory))
+                    } else {
+                        matchesCategory = false
+                    }
+                } else {
+                    matchesCategory = true
+                }
+                return matchesCategory && matchesText
+                
+            }
+        }
+    }
+    
+    private func populateCategories() {
+        var categorySet = Set<Category>()
+        for venue in venues {
+            if let venueCategories = venue.categories {
+                for category in venueCategories {
+                    categorySet.insert(category)
+                }
+            }
+        }
+        categories = Array(categorySet).sorted { $0.name < $1.name }
     }
     
     // Initial fetch
@@ -37,6 +96,8 @@ class VenueViewModel {
             await venueRepository.resetPagination()
             let result = try await venueRepository.getVenues(limit: itemsPerPage, loadMore: false)
             self.venues = result.venues
+            self.filterVenues(searchText)
+            populateCategories()
             hasMoreResults = result.hasMore
         } catch {
             self.error = error
@@ -61,6 +122,8 @@ class VenueViewModel {
                 
                 // Append new venues to existing list
                 self.venues.append(contentsOf: additionalVenues)
+                populateCategories()
+                filterVenues(self.searchText)
             } catch {
                 self.error = error
             }
@@ -69,7 +132,10 @@ class VenueViewModel {
         }
         
         func refresh() async {
-            await fetchVenues()
+            if searchText.isEmpty {
+                selectedCategory = nil
+                await fetchVenues()
+            }
         }
     
     func openMap(for venue: Venue) {

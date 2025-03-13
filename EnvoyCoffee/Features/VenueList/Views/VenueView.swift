@@ -13,15 +13,15 @@ struct VenueView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if viewModel.isLoading && viewModel.venues.isEmpty{
+                if viewModel.isLoading && viewModel.filteredVenues.isEmpty{
                     VenueLoadingView()
-                } else if viewModel.venues.isEmpty {
-                    EmptyVenueView()
+                } else if viewModel.filteredVenues.isEmpty {
+                    EmptyVenueView(viewModel: viewModel)
                 } else {
-                    VenueListView()
+                    VenueListView(viewModel: viewModel)
                 }
             }
-            .environment(viewModel)
+            
             .onAppear {
                 Task {
                     await viewModel.refresh()
@@ -33,6 +33,7 @@ struct VenueView: View {
             } message: {
                 Text(viewModel.error?.localizedDescription ?? "")
             }
+            .searchable(text: $viewModel.searchText, prompt: "Search")
         }
     }
 }
@@ -43,7 +44,7 @@ struct VenueView: View {
 
 
 struct EmptyVenueView: View {
-    @Environment(VenueViewModel.self) private var viewModel
+    var viewModel: VenueViewModel
     var body: some View {
         VStack {
             ContentUnavailableView("No Shops Available",
@@ -70,32 +71,47 @@ struct VenueLoadingView: View {
 }
 
 struct VenueListView: View {
-    @Environment(VenueViewModel.self) private var viewModel
+    @Bindable var viewModel: VenueViewModel
     var body: some View {
-            List {
-                ForEach(viewModel.venues) { venue in
-                    Button {
-                        viewModel.openMap(for: venue)
-                    } label: {
-                        VenueCardView(venue: venue)
-                            .onAppear {
-                                checkIfLastItem(venue)
-                            }
-                    }
-                    
+        
+        HStack {
+            Spacer()
+            Picker("Categories", selection: $viewModel.selectedCategory) {
+                Text("All Categories")
+                    .tag(nil as Category?)
+                ForEach(viewModel.categories, id: \.self) {
+                    Text($0.name)
+                        .tag($0 as Category?)
+                }
+            }
+            .padding(.horizontal)
+        }
+        
+        
+        List {
+            ForEach(viewModel.filteredVenues) { venue in
+                Button {
+                    viewModel.openMap(for: venue)
+                } label: {
+                    VenueCardView(venue: venue)
+                        .onAppear {
+                            checkIfLastItem(venue)
+                        }
                 }
                 
-                if viewModel.isLoadingMore {
-                    loadingMoreIndicator
-                }
             }
-            .environment(viewModel)
-            .refreshable {
-                Task {
-                    await viewModel.refresh()
-                }
+            
+            if viewModel.isLoadingMore {
+                loadingMoreIndicator
             }
         }
+        .environment(viewModel)
+        .refreshable {
+            Task {
+                await viewModel.refresh()
+            }
+        }
+    }
     
     private var loadingMoreIndicator: some View {
         HStack {

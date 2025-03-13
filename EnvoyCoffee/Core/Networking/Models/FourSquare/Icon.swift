@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Icon: Decodable {
+struct Icon: Decodable, Hashable {
     let prefix: String
     let suffix: String
     
